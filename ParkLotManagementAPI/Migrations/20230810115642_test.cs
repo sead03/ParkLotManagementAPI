@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ParkLotManagementAPI.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialDatabase : Migration
+    public partial class test : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -39,21 +39,21 @@ namespace ParkLotManagementAPI.Migrations
                 name: "parkSpots",
                 columns: table => new
                 {
-                    id = table.Column<int>(type: "integer", nullable: false)
+                    ParkSpotsid = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
                     reservedSpots = table.Column<int>(type: "integer", nullable: false),
                     freeSpots = table.Column<int>(type: "integer", nullable: false),
                     totalSpots = table.Column<int>(type: "integer", nullable: false),
-                    ParkSpotsid = table.Column<int>(type: "integer", nullable: true)
+                    ParkSpotsid1 = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_parkSpots", x => x.id);
+                    table.PrimaryKey("PK_parkSpots", x => x.ParkSpotsid);
                     table.ForeignKey(
-                        name: "FK_parkSpots_parkSpots_ParkSpotsid",
-                        column: x => x.ParkSpotsid,
+                        name: "FK_parkSpots_parkSpots_ParkSpotsid1",
+                        column: x => x.ParkSpotsid1,
                         principalTable: "parkSpots",
-                        principalColumn: "id");
+                        principalColumn: "ParkSpotsid");
                 });
 
             migrationBuilder.CreateTable(
@@ -152,9 +152,9 @@ namespace ParkLotManagementAPI.Migrations
                 column: "DailyLogsId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_parkSpots_ParkSpotsid",
+                name: "IX_parkSpots_ParkSpotsid1",
                 table: "parkSpots",
-                column: "ParkSpotsid");
+                column: "ParkSpotsid1");
 
             migrationBuilder.CreateIndex(
                 name: "IX_subscribers_Subscribersid",

@@ -9,36 +9,12 @@ namespace ParkLotManagementAPI.EfCore
         {
             modelBuilder.UseSerialColumns();
         }
-        public DbSet<ParkSpots> parkSpots 
-        {
-            get;
-            set;
-        }
-        public DbSet<Subscribers> subscribers
-        {
-            get;
-            set;
-        }
-        public DbSet<Subscriptions> subscriptions
-        {
-            get;
-            set;
-        }
-        public DbSet<WeekdayPricePlan> weekdayPricePlans
-        {
-            get;
-            set;
-        }
-        public DbSet<WeekendPricePlan> weekendPricePlans
-        {
-            get;
-            set;
-        }
-        public DbSet<DailyLogs> dailyLogs
-        {
-            get;
-            set;
-        }
+        public DbSet<ParkSpots> parkSpots { get; set; }
+        public DbSet<Subscribers> subscribers { get; set; }
+        public DbSet<Subscriptions> subscriptions { get; set; }
+        public DbSet<WeekdayPricePlan> weekdayPricePlans { get; set;}
+        public DbSet<WeekendPricePlan> weekendPricePlans { get; set; }
+        public DbSet<DailyLogs> dailyLogs { get; set; }
     }
 }
 

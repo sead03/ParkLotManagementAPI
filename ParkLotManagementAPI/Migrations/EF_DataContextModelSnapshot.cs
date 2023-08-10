@@ -17,7 +17,7 @@ namespace ParkLotManagementAPI.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.9")
+                .HasAnnotation("ProductVersion", "7.0.10")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseSerialColumns(modelBuilder);
@@ -57,17 +57,16 @@ namespace ParkLotManagementAPI.Migrations
 
             modelBuilder.Entity("ParkLotManagementAPI.EfCore.ParkSpots", b =>
                 {
-                    b.Property<int>("id")
+                    b.Property<int>("ParkSpotsid")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseSerialColumn(b.Property<int>("id"));
+                    NpgsqlPropertyBuilderExtensions.UseSerialColumn(b.Property<int>("ParkSpotsid"));
 
-                    b.Property<int?>("ParkSpotsid")
+                    b.Property<int?>("ParkSpotsid1")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("freeSpots")
-                        .IsRequired()
+                    b.Property<int>("freeSpots")
                         .HasColumnType("integer");
 
                     b.Property<int?>("reservedSpots")
@@ -77,9 +76,9 @@ namespace ParkLotManagementAPI.Migrations
                     b.Property<int>("totalSpots")
                         .HasColumnType("integer");
 
-                    b.HasKey("id");
+                    b.HasKey("ParkSpotsid");
 
-                    b.HasIndex("ParkSpotsid");
+                    b.HasIndex("ParkSpotsid1");
 
                     b.ToTable("parkSpots");
                 });
@@ -225,7 +224,7 @@ namespace ParkLotManagementAPI.Migrations
                 {
                     b.HasOne("ParkLotManagementAPI.EfCore.ParkSpots", null)
                         .WithMany("parkSpots")
-                        .HasForeignKey("ParkSpotsid");
+                        .HasForeignKey("ParkSpotsid1");
                 });
 
             modelBuilder.Entity("ParkLotManagementAPI.EfCore.Subscribers", b =>

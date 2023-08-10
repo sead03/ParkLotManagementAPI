@@ -19,7 +19,7 @@ namespace ParkLotManagementAPI.Models
             var dataList = _context.parkSpots.ToList();
             dataList.ForEach(row => response.Add(new ParkSpots()
             {
-                id = row.id,
+                ParkSpotsid = row.ParkSpotsid,
                 reservedSpots = row.reservedSpots,
                 freeSpots = row.freeSpots,
                 totalSpots = row.totalSpots

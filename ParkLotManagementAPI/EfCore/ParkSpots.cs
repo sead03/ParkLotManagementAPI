@@ -7,11 +7,11 @@ namespace ParkLotManagementAPI.EfCore
     public class ParkSpots
     {      
         [Key, Required]
-        public int id { get; set; }
+        public int ParkSpotsid { get; set; }
         [Required]
         public int? reservedSpots { get; set; }
         [Required]
-        public int? freeSpots { get; set;}
+        public int freeSpots { get; set;}
         [Required]
         public int totalSpots { get; set; }
 
