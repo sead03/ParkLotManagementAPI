@@ -9,6 +9,5 @@ namespace ParkLotManagementAPI.Controllers
         {
 
         }
-      
     }
 }

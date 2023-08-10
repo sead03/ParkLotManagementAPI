@@ -15,6 +15,5 @@ namespace ParkLotManagementAPI.EfCore
         [Required]
         public int totalSpots { get; set; }
 
-        public virtual ICollection<ParkSpots> parkSpots { get; set; }
     }
 }
