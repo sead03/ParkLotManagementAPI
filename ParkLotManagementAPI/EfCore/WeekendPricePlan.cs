@@ -14,10 +14,6 @@ namespace ParkLotManagementAPI.EfCore
         public int dailyPrice { get; set; }
         [Required]
         public int minimumHours { get; set; }
-        public virtual ICollection<WeekendPricePlan> weekendpriceplans
-        {
-            get;
-            set;
-        }
+
     }
 }

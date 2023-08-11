@@ -41,6 +41,64 @@ namespace ParkLotManagementAPI.Models
                 _context.SaveChanges();
             }
         }
+        public List<WeekdayPricePlan> GetWeekdayPricePlans()
+        {
+            List<WeekdayPricePlan> response = new List<WeekdayPricePlan>();
+            var dataList = _context.weekdayPricePlans.ToList();
+            dataList.ForEach(row => response.Add(new WeekdayPricePlan()
+            {
+                Id = row.Id,
+                hourlyPrice = row.hourlyPrice,
+                dailyPrice = row.dailyPrice,
+                minimumHours = row.minimumHours
+            }));
+            return response;
+        }
+        public void SaveWeekdayPricePlans(WeekdayPricePlanDto weekdayPricePlan)
+        {
+            WeekdayPricePlan dbTable = new WeekdayPricePlan();
+            if (weekdayPricePlan.Id > 0)
+            {
+                //PUT
+                dbTable = _context.weekdayPricePlans.Where(d => d.Id.Equals(weekdayPricePlan.Id)).FirstOrDefault();
+                if (dbTable != null)
+                {
+                    dbTable.hourlyPrice = weekdayPricePlan.hourlyPrice;
+                    dbTable.dailyPrice = weekdayPricePlan.dailyPrice;
+                    dbTable.minimumHours = weekdayPricePlan.minimumHours;
+                }
+                _context.SaveChanges();
+            }
+        }
+        public List<WeekendPricePlan> GetWeekendPricePlans()
+        {
+            List<WeekendPricePlan> response = new List<WeekendPricePlan>();
+            var dataList = _context.weekendPricePlans.ToList();
+            dataList.ForEach(row => response.Add(new WeekendPricePlan()
+            {
+                Id = row.Id,
+                hourlyPrice = row.hourlyPrice,
+                dailyPrice = row.dailyPrice,
+                minimumHours = row.minimumHours
+            }));
+            return response;
+        }
+        public void SaveWeekendPricePlans(WeekendPricePlanDto weekendPricePlan)
+        {
+            WeekendPricePlan dbTable = new WeekendPricePlan();
+            if (weekendPricePlan.Id > 0)
+            {
+                //PUT
+                dbTable = _context.weekendPricePlans.Where(d => d.Id.Equals(weekendPricePlan.Id)).FirstOrDefault();
+                if (dbTable != null)
+                {
+                    dbTable.hourlyPrice = weekendPricePlan.hourlyPrice;
+                    dbTable.dailyPrice = weekendPricePlan.dailyPrice;
+                    dbTable.minimumHours = weekendPricePlan.minimumHours;
+                }
+                _context.SaveChanges();
+            }
+        }
 
     }
 }
