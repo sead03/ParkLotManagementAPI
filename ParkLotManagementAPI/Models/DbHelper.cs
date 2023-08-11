@@ -26,6 +26,22 @@ namespace ParkLotManagementAPI.Models
             }));
             return response;
         }
+        public void SaveParkSpots (ParkSpotsDto parkSpots)
+        {
+            ParkSpots dbTable = new ParkSpots();
+            if (parkSpots.id > 0)
+            {
+                //PUT
+                dbTable = _context.parkSpots.Where(d => d.ParkSpotsid.Equals(parkSpots.id)).FirstOrDefault();
+                if (dbTable != null)
+                {
+                    dbTable.reservedSpots = parkSpots.reservedSpots;
+                    dbTable.freeSpots = parkSpots.freeSpots;
+                }
+                _context.SaveChanges();
+            }
+        }
+
     }
 }
         
