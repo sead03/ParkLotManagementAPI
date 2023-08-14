@@ -22,10 +22,7 @@ namespace ParkLotManagementAPI.EfCore
         public DateOnly birthday { get; set; }
         [Required]
         public string plateNumber { get; set; }
-        public virtual ICollection<Subscribers> subscribers
-        {
-            get;
-            set;
-        }
+        public bool isDeleted { get; set; } = false;
+
     }
 }

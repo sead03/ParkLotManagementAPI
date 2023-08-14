@@ -18,10 +18,6 @@ namespace ParkLotManagementAPI.EfCore
         public DateOnly startDate { get; set; }
         [Required]
         public DateOnly endDate { get; set; }
-        public virtual ICollection<Subscriptions> subscriptions
-        {
-            get;
-            set;
-        }
+        public bool isDeleted { get; set; } = false;
     }
 }

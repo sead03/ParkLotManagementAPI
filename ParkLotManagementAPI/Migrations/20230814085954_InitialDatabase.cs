@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ParkLotManagementAPI.Migrations
 {
     /// <inheritdoc />
-    public partial class test : Migration
+    public partial class InitialDatabase : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -43,17 +43,11 @@ namespace ParkLotManagementAPI.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
                     reservedSpots = table.Column<int>(type: "integer", nullable: false),
                     freeSpots = table.Column<int>(type: "integer", nullable: false),
-                    totalSpots = table.Column<int>(type: "integer", nullable: false),
-                    ParkSpotsid1 = table.Column<int>(type: "integer", nullable: true)
+                    totalSpots = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_parkSpots", x => x.ParkSpotsid);
-                    table.ForeignKey(
-                        name: "FK_parkSpots_parkSpots_ParkSpotsid1",
-                        column: x => x.ParkSpotsid1,
-                        principalTable: "parkSpots",
-                        principalColumn: "ParkSpotsid");
                 });
 
             migrationBuilder.CreateTable(
@@ -68,17 +62,11 @@ namespace ParkLotManagementAPI.Migrations
                     email = table.Column<string>(type: "text", nullable: false),
                     phoneNumber = table.Column<int>(type: "integer", nullable: false),
                     birthday = table.Column<DateOnly>(type: "date", nullable: false),
-                    plateNumber = table.Column<string>(type: "text", nullable: false),
-                    Subscribersid = table.Column<int>(type: "integer", nullable: true)
+                    plateNumber = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_subscribers", x => x.id);
-                    table.ForeignKey(
-                        name: "FK_subscribers_subscribers_Subscribersid",
-                        column: x => x.Subscribersid,
-                        principalTable: "subscribers",
-                        principalColumn: "id");
                 });
 
             migrationBuilder.CreateTable(
@@ -112,17 +100,11 @@ namespace ParkLotManagementAPI.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
                     hourlyPrice = table.Column<int>(type: "integer", nullable: false),
                     dailyPrice = table.Column<int>(type: "integer", nullable: false),
-                    minimumHours = table.Column<int>(type: "integer", nullable: false),
-                    WeekdayPricePlanId = table.Column<int>(type: "integer", nullable: true)
+                    minimumHours = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_weekdaypriceplan", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_weekdaypriceplan_weekdaypriceplan_WeekdayPricePlanId",
-                        column: x => x.WeekdayPricePlanId,
-                        principalTable: "weekdaypriceplan",
-                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -133,17 +115,11 @@ namespace ParkLotManagementAPI.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
                     hourlyPrice = table.Column<int>(type: "integer", nullable: false),
                     dailyPrice = table.Column<int>(type: "integer", nullable: false),
-                    minimumHours = table.Column<int>(type: "integer", nullable: false),
-                    WeekendPricePlanId = table.Column<int>(type: "integer", nullable: true)
+                    minimumHours = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_weekendpriceplan", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_weekendpriceplan_weekendpriceplan_WeekendPricePlanId",
-                        column: x => x.WeekendPricePlanId,
-                        principalTable: "weekendpriceplan",
-                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateIndex(
@@ -152,29 +128,9 @@ namespace ParkLotManagementAPI.Migrations
                 column: "DailyLogsId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_parkSpots_ParkSpotsid1",
-                table: "parkSpots",
-                column: "ParkSpotsid1");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_subscribers_Subscribersid",
-                table: "subscribers",
-                column: "Subscribersid");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_subscriptions_Subscriptionsid",
                 table: "subscriptions",
                 column: "Subscriptionsid");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_weekdaypriceplan_WeekdayPricePlanId",
-                table: "weekdaypriceplan",
-                column: "WeekdayPricePlanId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_weekendpriceplan_WeekendPricePlanId",
-                table: "weekendpriceplan",
-                column: "WeekendPricePlanId");
         }
 
         /// <inheritdoc />

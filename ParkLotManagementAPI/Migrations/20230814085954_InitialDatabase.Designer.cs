@@ -12,8 +12,8 @@ using ParkLotManagementAPI.EfCore;
 namespace ParkLotManagementAPI.Migrations
 {
     [DbContext(typeof(EF_DataContext))]
-    [Migration("20230810115642_test")]
-    partial class test
+    [Migration("20230814085954_InitialDatabase")]
+    partial class InitialDatabase
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -66,9 +66,6 @@ namespace ParkLotManagementAPI.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseSerialColumn(b.Property<int>("ParkSpotsid"));
 
-                    b.Property<int?>("ParkSpotsid1")
-                        .HasColumnType("integer");
-
                     b.Property<int>("freeSpots")
                         .HasColumnType("integer");
 
@@ -81,8 +78,6 @@ namespace ParkLotManagementAPI.Migrations
 
                     b.HasKey("ParkSpotsid");
 
-                    b.HasIndex("ParkSpotsid1");
-
                     b.ToTable("parkSpots");
                 });
 
@@ -93,9 +88,6 @@ namespace ParkLotManagementAPI.Migrations
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseSerialColumn(b.Property<int>("id"));
-
-                    b.Property<int?>("Subscribersid")
-                        .HasColumnType("integer");
 
                     b.Property<DateOnly>("birthday")
                         .HasColumnType("date");
@@ -123,8 +115,6 @@ namespace ParkLotManagementAPI.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("id");
-
-                    b.HasIndex("Subscribersid");
 
                     b.ToTable("subscribers");
                 });
@@ -170,9 +160,6 @@ namespace ParkLotManagementAPI.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseSerialColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("WeekdayPricePlanId")
-                        .HasColumnType("integer");
-
                     b.Property<int>("dailyPrice")
                         .HasColumnType("integer");
 
@@ -183,8 +170,6 @@ namespace ParkLotManagementAPI.Migrations
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("WeekdayPricePlanId");
 
                     b.ToTable("weekdaypriceplan");
                 });
@@ -197,9 +182,6 @@ namespace ParkLotManagementAPI.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseSerialColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("WeekendPricePlanId")
-                        .HasColumnType("integer");
-
                     b.Property<int>("dailyPrice")
                         .HasColumnType("integer");
 
@@ -211,8 +193,6 @@ namespace ParkLotManagementAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("WeekendPricePlanId");
-
                     b.ToTable("weekendpriceplan");
                 });
 
@@ -223,20 +203,6 @@ namespace ParkLotManagementAPI.Migrations
                         .HasForeignKey("DailyLogsId");
                 });
 
-            modelBuilder.Entity("ParkLotManagementAPI.EfCore.ParkSpots", b =>
-                {
-                    b.HasOne("ParkLotManagementAPI.EfCore.ParkSpots", null)
-                        .WithMany("parkSpots")
-                        .HasForeignKey("ParkSpotsid1");
-                });
-
-            modelBuilder.Entity("ParkLotManagementAPI.EfCore.Subscribers", b =>
-                {
-                    b.HasOne("ParkLotManagementAPI.EfCore.Subscribers", null)
-                        .WithMany("subscribers")
-                        .HasForeignKey("Subscribersid");
-                });
-
             modelBuilder.Entity("ParkLotManagementAPI.EfCore.Subscriptions", b =>
                 {
                     b.HasOne("ParkLotManagementAPI.EfCore.Subscriptions", null)
@@ -244,48 +210,14 @@ namespace ParkLotManagementAPI.Migrations
                         .HasForeignKey("Subscriptionsid");
                 });
 
-            modelBuilder.Entity("ParkLotManagementAPI.EfCore.WeekdayPricePlan", b =>
-                {
-                    b.HasOne("ParkLotManagementAPI.EfCore.WeekdayPricePlan", null)
-                        .WithMany("weekdaypriceplans")
-                        .HasForeignKey("WeekdayPricePlanId");
-                });
-
-            modelBuilder.Entity("ParkLotManagementAPI.EfCore.WeekendPricePlan", b =>
-                {
-                    b.HasOne("ParkLotManagementAPI.EfCore.WeekendPricePlan", null)
-                        .WithMany("weekendpriceplans")
-                        .HasForeignKey("WeekendPricePlanId");
-                });
-
             modelBuilder.Entity("ParkLotManagementAPI.EfCore.DailyLogs", b =>
                 {
                     b.Navigation("dailylogs");
                 });
 
-            modelBuilder.Entity("ParkLotManagementAPI.EfCore.ParkSpots", b =>
-                {
-                    b.Navigation("parkSpots");
-                });
-
-            modelBuilder.Entity("ParkLotManagementAPI.EfCore.Subscribers", b =>
-                {
-                    b.Navigation("subscribers");
-                });
-
             modelBuilder.Entity("ParkLotManagementAPI.EfCore.Subscriptions", b =>
                 {
                     b.Navigation("subscriptions");
-                });
-
-            modelBuilder.Entity("ParkLotManagementAPI.EfCore.WeekdayPricePlan", b =>
-                {
-                    b.Navigation("weekdaypriceplans");
-                });
-
-            modelBuilder.Entity("ParkLotManagementAPI.EfCore.WeekendPricePlan", b =>
-                {
-                    b.Navigation("weekendpriceplans");
                 });
 #pragma warning restore 612, 618
         }
