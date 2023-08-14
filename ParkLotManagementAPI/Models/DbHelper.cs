@@ -41,19 +41,6 @@ namespace ParkLotManagementAPI.Models
                 _context.SaveChanges();
             }
         }
-        public List<WeekdayPricePlan> GetWeekdayPricePlans()
-        {
-            List<WeekdayPricePlan> response = new List<WeekdayPricePlan>();
-            var dataList = _context.weekdayPricePlans.ToList();
-            dataList.ForEach(row => response.Add(new WeekdayPricePlan()
-            {
-                Id = row.Id,
-                hourlyPrice = row.hourlyPrice,
-                dailyPrice = row.dailyPrice,
-                minimumHours = row.minimumHours
-            }));
-            return response;
-        }
         public void SaveWeekdayPricePlans(WeekdayPricePlanDto weekdayPricePlan)
         {
             WeekdayPricePlan dbTable = new WeekdayPricePlan();
@@ -69,19 +56,6 @@ namespace ParkLotManagementAPI.Models
                 }
                 _context.SaveChanges();
             }
-        }
-        public List<WeekendPricePlan> GetWeekendPricePlans()
-        {
-            List<WeekendPricePlan> response = new List<WeekendPricePlan>();
-            var dataList = _context.weekendPricePlans.ToList();
-            dataList.ForEach(row => response.Add(new WeekendPricePlan()
-            {
-                Id = row.Id,
-                hourlyPrice = row.hourlyPrice,
-                dailyPrice = row.dailyPrice,
-                minimumHours = row.minimumHours
-            }));
-            return response;
         }
         public void SaveWeekendPricePlans(WeekendPricePlanDto weekendPricePlan)
         {
@@ -99,7 +73,6 @@ namespace ParkLotManagementAPI.Models
                 _context.SaveChanges();
             }
         }
-
     }
 }
         
