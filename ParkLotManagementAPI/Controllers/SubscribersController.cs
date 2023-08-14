@@ -47,11 +47,6 @@ namespace ParkLotManagementAPI.Controllers
                     data = data.Where(subscriber => subscriber.firstName.Contains(firstName));
                 }
 
-                if (!string.IsNullOrEmpty(lastName))
-                {
-                    data = data.Where(subscriber => subscriber.lastName == lastName);
-                }
-
                 if (!data.Any())
                 {
                     type = ResponseType.NotFound;
@@ -101,7 +96,6 @@ namespace ParkLotManagementAPI.Controllers
         {
             try
             {
-                ResponseType type = ResponseType.Success;
                 _db.DeleteSubscriber(id);
                 return Ok(ResponseHandler.GetAppResponse(type, "Delete Successfully"));
             }

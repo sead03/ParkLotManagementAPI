@@ -21,11 +21,6 @@ namespace ParkLotManagementAPI.Controllers
             {
                 IEnumerable<Subscriptions> data = _db.GetSubscriptions();
 
-                if (code != null)
-                {
-                    data = data.Where(subscriptions => subscriptions.code != null);
-                }
-
                 if (!data.Any())
                 {
                     type = ResponseType.NotFound;

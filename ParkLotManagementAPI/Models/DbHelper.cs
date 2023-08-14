@@ -165,8 +165,6 @@ namespace ParkLotManagementAPI.Models
                 dbTable = _context.subscriptions.Where(d => d.id.Equals(subscriptions.id)).FirstOrDefault();
                 if (dbTable != null)
                 {
-                    dbTable.id = subscriptions.id;
-                    dbTable.code = subscriptions.code;
                     dbTable.subscriberId = subscriptions.subscriberId;
                     dbTable.price = subscriptions.price;
                     dbTable.startDate = subscriptions.startDate;
@@ -174,18 +172,6 @@ namespace ParkLotManagementAPI.Models
 
                 }
             }
-            else
-            {
-                //POST
-                dbTable.id = subscriptions.id;
-                dbTable.code = subscriptions.code;
-                dbTable.subscriberId = subscriptions.subscriberId;
-                dbTable.price = subscriptions.price;
-                dbTable.startDate = subscriptions.startDate;
-                dbTable.endDate = subscriptions.endDate;
-                _context.subscriptions.Add(dbTable);
-            }
-            _context.SaveChanges();
         }
 
         public void PostDailyLog(DailyLogs dailyLogs)
@@ -219,7 +205,6 @@ namespace ParkLotManagementAPI.Models
                 _context.subscribers.Remove(subscriber);
                 _context.SaveChanges();
             }
-        }
         public void DeleteSubscription(int id)
         {
             var subscription = _context.subscriptions.Where(d => d.id.Equals(id)).FirstOrDefault();
