@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.Kiota.Abstractions;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ParkLotManagementAPI.EfCore
@@ -13,15 +14,11 @@ namespace ParkLotManagementAPI.EfCore
         [Required]
         public int subscriptionId { get; set; }
         [Required]
-        public TimeOnly checkIn { get; set; }
+        public DateTime checkIn { get; set; }
         [Required]
-        public TimeOnly checkOut { get; set; }
+        public DateTime checkOut { get; set; }
         [Required]
         public int price { get; set; }
-        public virtual ICollection<DailyLogs> dailylogs 
-        {
-            get;
-            set;
-        }
+
     }
 }

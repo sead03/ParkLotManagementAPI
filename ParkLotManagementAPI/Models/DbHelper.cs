@@ -1,4 +1,5 @@
-﻿using ParkLotManagementAPI.EfCore;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using ParkLotManagementAPI.EfCore;
 
 namespace ParkLotManagementAPI.Models
 {
@@ -68,10 +69,15 @@ namespace ParkLotManagementAPI.Models
                 phoneNumber = row.phoneNumber,
                 birthday = row.birthday,
                 plateNumber = row.plateNumber,
+                isDeleted = row.isDeleted,
             }));
             return response;
         }
-        public List<Subscriptions> GetSubscriptions()
+        public bool CheckDuplicateIdCardNumber(int cardNumberId)
+        {
+            return _context.subscribers.Any(subscriber => subscriber.cardNumberId == cardNumberId);
+        }
+        public List<Subscriptions> GetSubscription()
         {
             List<Subscriptions> response = new List<Subscriptions>();
             var dataList = _context.subscriptions.Where(x=>x.isDeleted==false).ToList();
@@ -86,6 +92,104 @@ namespace ParkLotManagementAPI.Models
             }));
             return response;
         }
+        public Subscriptions GetSubscriptionByCode(int code)
+        {
+            return _context.subscriptions.FirstOrDefault(subscription => subscription.code == code);
+        }
+
+        public List<DailyLogs> GetDailyLogs()
+        {
+            var checkin = _context.dailyLogs.OrderByDescending(i => i.checkIn).FirstOrDefault();
+            var weekdaypriceplan = _context.weekdayPricePlans.OrderByDescending(i => i.hourlyPrice).FirstOrDefault();
+            var weekendpriceplan = _context.weekendPricePlans.OrderByDescending(i => i.hourlyPrice).FirstOrDefault();
+            var subscription = _context.subscriptions.OrderByDescending(i=>i.subscriberId).FirstOrDefault();
+
+            int calculatedPrice = CalculatePricePlan(checkin, weekdaypriceplan, weekendpriceplan, subscription);
+
+            List<DailyLogs> response = new List<DailyLogs>();
+            var dataList = _context.dailyLogs.ToList();
+            dataList.ForEach(row => response.Add(new DailyLogs()
+            {
+                Id = row.Id,
+                code = row.code,
+                subscriptionId = row.subscriptionId,
+                checkIn = row.checkIn,
+                checkOut = row.checkOut,
+                price = calculatedPrice
+            }));
+            return response;
+        }
+        public List<DailyLogs> GetLogsWithCalculatedPrice()
+        {
+            var logs = _context.dailyLogs.ToList();
+            var weekdayPricePlan = _context.weekdayPricePlans.OrderByDescending(i => i.hourlyPrice).FirstOrDefault();
+            var weekendPricePlan = _context.weekendPricePlans.OrderByDescending(i => i.hourlyPrice).FirstOrDefault();
+            var subscription = _context.subscriptions.OrderByDescending(i => i.subscriberId).FirstOrDefault();
+
+            List<DailyLogs> logsWithCalculatedPrice = new List<DailyLogs>();
+
+            foreach (var log in logs)
+            {
+                int calculatedPrice = CalculatePricePlan(log, weekdayPricePlan, weekendPricePlan, subscription);
+
+                logsWithCalculatedPrice.Add(new DailyLogs
+                {
+                    Id = log.Id,
+                    code = log.code,
+                    subscriptionId = log.subscriptionId,
+                    checkIn = log.checkIn,
+                    checkOut = log.checkOut,
+                    price = calculatedPrice
+                });
+            }
+
+            return logsWithCalculatedPrice;
+        }
+
+        public int CalculatePricePlan(DailyLogs dailyLogs,WeekdayPricePlan weekdayPricePlan, WeekendPricePlan weekendPricePlan,Subscriptions subscriptions)
+        {
+            // Step 1: Check if the check-in has happened on a weekend
+            bool isWeekend = dailyLogs.checkIn.DayOfWeek == DayOfWeek.Saturday || dailyLogs.checkIn.DayOfWeek == DayOfWeek.Sunday;
+            // Step 2: Calculate the total number of hours
+            TimeSpan duration = dailyLogs.checkOut - dailyLogs.checkIn;
+            double totalHours = duration.TotalHours;
+            // Step 3: Minimum hours of the payment plan
+            int minimumHours = isWeekend ? weekdayPricePlan.minimumHours : weekendPricePlan.minimumHours;
+            // Step 4/1 and 4/2: Calculate the price
+            int hourlyRate = isWeekend ? weekdayPricePlan.hourlyPrice : weekendPricePlan.hourlyPrice; // Adjust hourly rates for weekday and weekend
+            int dailyRate = isWeekend ? weekdayPricePlan.dailyPrice : weekendPricePlan.dailyPrice;
+
+            int price;
+
+            if (dailyLogs.subscriptionId == subscriptions.subscriberId)
+            {
+                price = 0; // Subscription ID is present, price is 0
+            }
+            else if (totalHours <= minimumHours)
+            {
+                price = hourlyRate * (int)totalHours;
+            }
+            else
+            {
+                int numberOfDays = (int)Math.Floor(totalHours / 24);
+                double remainingHours = totalHours % 24;
+
+                if (remainingHours <= minimumHours)
+                {
+                    price = (int)numberOfDays * dailyRate + hourlyRate * (int)remainingHours;
+                }
+                else
+                {
+                    price = (int)(numberOfDays + 1) * dailyRate;
+                }
+            }
+
+            dailyLogs.price = price;
+            
+            return price;
+        }
+    
+
 
         /// <summary>
         /// It serves the POST/PUT/PATCH
@@ -140,6 +244,23 @@ namespace ParkLotManagementAPI.Models
                 _context.SaveChanges();
             }
         }
+
+        public void UpdateSubscriber(Subscribers subscribers)
+        {
+            Subscribers dbTable = _context.subscribers.FirstOrDefault(d => d.id == subscribers.id);
+            if (dbTable != null)
+            {
+                dbTable.firstName = subscribers.firstName;
+                dbTable.lastName = subscribers.lastName;
+                dbTable.cardNumberId = subscribers.cardNumberId;
+                dbTable.email = subscribers.email;
+                dbTable.phoneNumber = subscribers.phoneNumber;
+                dbTable.birthday = subscribers.birthday;
+                dbTable.plateNumber = subscribers.plateNumber;
+
+                _context.SaveChanges();
+            }
+        }
         public void PostSubscriber(Subscribers subscribers)
         {
             Subscribers dbTable = new Subscribers();
@@ -156,63 +277,81 @@ namespace ParkLotManagementAPI.Models
 
             _context.SaveChanges();
         }
-        public void UpdateSubscription(Subscriptions subscriptions)
+        public void CreateSubscription(Subscriptions subscription)
         {
-            Subscriptions dbTable = new Subscriptions();
-            if (subscriptions.id > 0)
+            // Check for duplicate subscription code
+            bool isDuplicateCode = _context.subscriptions.Any(s => s.code == subscription.code);
+            if (isDuplicateCode)
             {
-                //PUT
-                dbTable = _context.subscriptions.Where(d => d.id.Equals(subscriptions.id)).FirstOrDefault();
-                if (dbTable != null)
-                {
-                    dbTable.subscriberId = subscriptions.subscriberId;
-                    dbTable.price = subscriptions.price;
-                    dbTable.startDate = subscriptions.startDate;
-                    dbTable.endDate = subscriptions.endDate;    
-
-                }
+                throw new Exception("A subscription with the same code already exists.");
             }
-        }
 
-        public void PostDailyLog(DailyLogs dailyLogs)
-        {
-            DailyLogs dbTable = new DailyLogs();
-            if (dailyLogs.Id > 0)
-            {
-                //POST
-                dbTable = _context.dailyLogs.Where(d => d.Id.Equals(dailyLogs.Id)).FirstOrDefault();
-                if (dbTable != null)
-                {
-                    dbTable.Id = dailyLogs.Id;
-                    dbTable.code = dailyLogs.code;
-                    dbTable.subscriptionId = dailyLogs.subscriptionId;
-                    dbTable.checkIn = dailyLogs.checkIn;
-                    dbTable.checkOut = dailyLogs.checkOut;
-                    dbTable.price = dailyLogs.price;
-                }
-            }
+            _context.subscriptions.Add(subscription);
             _context.SaveChanges();
         }
+        public void UpdateSubscription(Subscriptions subscription)
+        {
+            Subscriptions dbtable = _context.subscriptions.FirstOrDefault(s => s.id == subscription.id);
+
+            if (dbtable != null)
+            {
+                dbtable.code = subscription.code;
+                dbtable.subscriberId = subscription.subscriberId;
+                dbtable.price = subscription.price;
+                dbtable.startDate = subscription.startDate;
+                dbtable.endDate = subscription.endDate;
+
+                _context.SaveChanges();
+            }
+        }
+        private int GenerateRandomCode()
+        {
+            Random random = new Random();
+            return random.Next(1000, 9999); // Generate a random 4-digit code
+        }
+
+        public void CreateLogWithRandomCode(DailyLogs dailyLogs)
+        {
+            int randomCode = GenerateRandomCode();
+
+            // Create a new log with the generated random code
+            DailyLogs newLog = new DailyLogs
+            {
+                code = randomCode,
+                subscriptionId = dailyLogs.subscriptionId,
+                checkIn = dailyLogs.checkIn,
+                checkOut = dailyLogs.checkOut,
+                price = dailyLogs.price
+            };
+
+            _context.dailyLogs.Add(newLog);
+            _context.SaveChanges();
+        }
+
+       
         /// <summary>
         /// DELETE
         /// </summary>
         /// <param name="id"></param>
         public void DeleteSubscriber(int id)
         {
-            var subscriber = _context.subscribers.Where(d => d.id.Equals(id)).FirstOrDefault();
-            if (subscriber != null)
+            Subscribers dbTable = _context.subscribers.FirstOrDefault(d => d.id == id);
+            if (dbTable != null)
             {
-                _context.subscribers.Remove(subscriber);
-                _context.SaveChanges();
+                dbTable.isDeleted = true;
             }
+            _context.SaveChanges();
+
+        }
         public void DeleteSubscription(int id)
         {
-            var subscription = _context.subscriptions.Where(d => d.id.Equals(id)).FirstOrDefault();
-            if (subscription != null)
+            Subscriptions dbTable = _context.subscriptions.FirstOrDefault(d => d.id == id);
+            if (dbTable != null)
             {
-                subscription.isDeleted =true;
-                _context.SaveChanges();
+                dbTable.isDeleted = true;
             }
+            _context.SaveChanges();
+
         }
     }
 }

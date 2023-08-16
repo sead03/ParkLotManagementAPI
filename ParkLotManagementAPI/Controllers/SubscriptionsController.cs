@@ -14,12 +14,12 @@ namespace ParkLotManagementAPI.Controllers
         }
         [HttpGet]
         [Route("api/[controller]/GetSubscription")]
-        public IActionResult GetSubscriptions(int code)
+        public IActionResult GetSubscription()
         {
             ResponseType type = ResponseType.Success;
             try
             {
-                IEnumerable<Subscriptions> data = _db.GetSubscriptions();
+                IEnumerable<Subscriptions> data = _db.GetSubscription();
 
                 if (!data.Any())
                 {
@@ -33,36 +33,81 @@ namespace ParkLotManagementAPI.Controllers
                 return BadRequest(ResponseHandler.GetExceptionResponse(ex));
             }
         }
-
-        [HttpPut]
-        [Route("api/[controller]/UpdateSubscription")]
-        public IActionResult Put([FromBody] Subscriptions subscriptions)
+        [HttpGet]
+        [Route("api/[controller]/GetSubscription{code}")]
+        public IActionResult GetSubscriptionByCode(int code)
         {
             try
             {
-                ResponseType type = ResponseType.Success;
-                _db.UpdateSubscription(subscriptions);
-                return Ok(ResponseHandler.GetAppResponse(type, subscriptions));
+                Subscriptions subscription = _db.GetSubscriptionByCode(code);
+
+                if (subscription == null)
+                {
+                    return NotFound("Subscription not found.");
+                }
+
+                return Ok(ResponseHandler.GetAppResponse(ResponseType.Success, subscription));
             }
             catch (Exception ex)
             {
-                return BadRequest(ResponseHandler.GetExceptionResponse(ex));
+                return BadRequest("An error occurred: " + ex.Message);
+            }
+        }
+
+        [HttpPost]
+        [Route("api/[controller]/CreateSubscription")]
+        public IActionResult CreateSubscription([FromBody] Subscriptions subscription)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                _db.CreateSubscription(subscription);
+
+                return Ok("Subscription created successfully.");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest("An error occurred: " + ex.Message);
+            }
+        }
+
+        [HttpPut]
+        [Route("api/[controller]/UpdateSubscription")]
+        public IActionResult UpdateSubscription([FromBody] Subscriptions subscription)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                _db.UpdateSubscription(subscription);
+
+                return Ok("Subscription updated successfully.");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest("An error occurred: " + ex.Message);
             }
         }
 
         [HttpDelete]
-        [Route("api/[controller]/DeleteSubscription/{id}")]
-        public IActionResult Delete(int id)
+        [Route("api/[controller]/DeleteSubscription/{code}")]
+        public IActionResult Delete(int code)
         {
             try
             {
-                ResponseType type = ResponseType.Success;
-                _db.DeleteSubscription(id);
-                return Ok(ResponseHandler.GetAppResponse(type, "Delete Successfully"));
+                _db.DeleteSubscription(code);
+                return Ok("Subscriber soft deleted successfully.");
             }
             catch (Exception ex)
             {
-                return BadRequest(ResponseHandler.GetExceptionResponse(ex));
+                return BadRequest("An error occurred: " + ex.Message);
             }
         }
     }
