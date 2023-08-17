@@ -97,28 +97,6 @@ namespace ParkLotManagementAPI.Models
             return _context.subscriptions.FirstOrDefault(subscription => subscription.code == code);
         }
 
-        public List<DailyLogs> GetDailyLogs()
-        {
-            var checkin = _context.dailyLogs.OrderByDescending(i => i.checkIn).FirstOrDefault();
-            var weekdaypriceplan = _context.weekdayPricePlans.OrderByDescending(i => i.hourlyPrice).FirstOrDefault();
-            var weekendpriceplan = _context.weekendPricePlans.OrderByDescending(i => i.hourlyPrice).FirstOrDefault();
-            var subscription = _context.subscriptions.OrderByDescending(i=>i.subscriberId).FirstOrDefault();
-
-            int calculatedPrice = CalculatePricePlan(checkin, weekdaypriceplan, weekendpriceplan, subscription);
-
-            List<DailyLogs> response = new List<DailyLogs>();
-            var dataList = _context.dailyLogs.ToList();
-            dataList.ForEach(row => response.Add(new DailyLogs()
-            {
-                Id = row.Id,
-                code = row.code,
-                subscriptionId = row.subscriptionId,
-                checkIn = row.checkIn,
-                checkOut = row.checkOut,
-                price = calculatedPrice
-            }));
-            return response;
-        }
         public List<DailyLogs> GetLogsWithCalculatedPrice()
         {
             var logs = _context.dailyLogs.ToList();
@@ -142,7 +120,6 @@ namespace ParkLotManagementAPI.Models
                     price = calculatedPrice
                 });
             }
-
             return logsWithCalculatedPrice;
         }
 
@@ -265,7 +242,6 @@ namespace ParkLotManagementAPI.Models
         {
             Subscribers dbTable = new Subscribers();
 
-                dbTable.id = subscribers.id;
                 dbTable.firstName = subscribers.firstName;
                 dbTable.lastName = subscribers.lastName;
                 dbTable.cardNumberId = subscribers.cardNumberId;
@@ -274,7 +250,6 @@ namespace ParkLotManagementAPI.Models
                 dbTable.birthday = subscribers.birthday;
                 dbTable.plateNumber = subscribers.plateNumber;
                 _context.subscribers.Add(dbTable);
-
             _context.SaveChanges();
         }
         public void CreateSubscription(Subscriptions subscription)
@@ -295,8 +270,6 @@ namespace ParkLotManagementAPI.Models
 
             if (dbtable != null)
             {
-                dbtable.code = subscription.code;
-                dbtable.subscriberId = subscription.subscriberId;
                 dbtable.price = subscription.price;
                 dbtable.startDate = subscription.startDate;
                 dbtable.endDate = subscription.endDate;
@@ -312,7 +285,6 @@ namespace ParkLotManagementAPI.Models
 
         public void CreateLogWithRandomCode(DailyLogs dailyLogs)
         {
-            int randomCode = GenerateRandomCode();
 
             // Create a new log with the generated random code
             DailyLogs newLog = new DailyLogs
